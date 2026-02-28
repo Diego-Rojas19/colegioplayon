@@ -1,0 +1,12 @@
+{
+  "name": "colegio-api",
+  "version": "1.0.0",
+  "description": "API REST - Sistema de Colegio | SENA Proyecto 5",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

@@ -1,164 +1,224 @@
-# 🏫 API REST – Sistema de Colegio | SENA Proyecto 5
-integrandes 
-- Diego Andres Rojas Quintero
--Diego Bermudez
+# 🏫 API REST - Sistema de Colegio
 
-API REST desarrollada con Node.js y Express.js como parte de la actividad del SENA.  
-Implementa CRUD completo para las entidades: **Estudiantes, Profesores, Materias y Notas**.
+**Proyecto SENA – Desarrollo de APIs REST con Node.js**
 
-## 🚀 Instalación y ejecución
+Esta API permite gestionar la información de un sistema académico básico de un colegio, incluyendo estudiantes, profesores, materias y notas.
 
-```bash
-npm install
-npm start
-```
-
-La API correrá en: `http://localhost:3000`
+La aplicación fue desarrollada usando **Node.js, Express y SQLite** y permite realizar operaciones **CRUD completas** a través de endpoints REST.
 
 ---
 
-## 📋 Endpoints
+# 🚀 Tecnologías utilizadas
 
-### 👩‍🎓 Estudiantes – `/estudiantes`
-
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/estudiantes` | Lista todos (soporta filtros por query) |
-| GET | `/estudiantes/:id` | Busca por ID |
-| POST | `/estudiantes` | Crea un nuevo estudiante |
-| PUT | `/estudiantes/:id` | Actualiza un estudiante |
-| DELETE | `/estudiantes/:id` | Elimina un estudiante |
-
-**Campos:** `id`, `nombre`, `email`, `grado`, `edad`, `activo`
-
-**Query params disponibles:** `?nombre=Ana&grado=10A&activo=true`  
-**Header leído:** `Accept-Language` → devuelto en la respuesta como `idioma_cliente`
-
-**Ejemplo POST body:**
-```json
-{
-  "nombre": "Camila Torres",
-  "email": "camila@colegio.com",
-  "grado": "10B",
-  "edad": 15
-}
-```
+* Node.js
+* Express.js
+* SQLite3
+* Postman (para pruebas de API)
+* draw.io (para diagrama ER)
 
 ---
 
-### 👨‍🏫 Profesores – `/profesores`
-
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/profesores` | Lista todos (soporta filtros por query) |
-| GET | `/profesores/:id` | Busca por ID |
-| POST | `/profesores` | Crea un nuevo profesor |
-| PUT | `/profesores/:id` | Actualiza un profesor |
-| DELETE | `/profesores/:id` | Elimina un profesor |
-
-**Campos:** `id`, `nombre`, `email`, `especialidad`, `activo`
-
-**Query params disponibles:** `?especialidad=Matematicas&activo=true`  
-**Header leído:** `Authorization` → devuelto en la respuesta como `token_recibido`
-
-**Ejemplo POST body:**
-```json
-{
-  "nombre": "Isabel Vargas",
-  "email": "ivargas@colegio.com",
-  "especialidad": "Física"
-}
-```
-
----
-
-### 📚 Materias – `/materias`
-
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/materias` | Lista todas (soporta filtros por query) |
-| GET | `/materias/:id` | Busca por ID |
-| POST | `/materias` | Crea una nueva materia |
-| PUT | `/materias/:id` | Actualiza una materia |
-| DELETE | `/materias/:id` | Elimina una materia |
-
-**Campos:** `id`, `nombre`, `codigo`, `profesorId`, `creditos`, `activa`
-
-**Query params disponibles:** `?nombre=Ingles&activa=true`  
-**Header leído:** `x-grado` → devuelto en la respuesta como `grado_consultante`
-
-**Ejemplo POST body:**
-```json
-{
-  "nombre": "Educación Física",
-  "codigo": "EF-01",
-  "profesorId": 2,
-  "creditos": 2
-}
-```
-
----
-
-### 📝 Notas – `/notas`
-
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/notas` | Lista todas (soporta filtros por query) |
-| GET | `/notas/:id` | Busca por ID |
-| POST | `/notas` | Registra una nueva nota |
-| PUT | `/notas/:id` | Actualiza una nota existente |
-| DELETE | `/notas/:id` | Elimina una nota |
-
-**Campos:** `id`, `estudianteId`, `materiaId`, `nota` (0.0–5.0), `periodo`, `fecha`
-
-**Query params disponibles:** `?estudianteId=1&periodo=P1-2025`  
-**Header leído:** `x-rol` (admin | profesor | estudiante) → filtra resultados según rol
-
-**Ejemplo POST body:**
-```json
-{
-  "estudianteId": 1,
-  "materiaId": 3,
-  "nota": 4.2,
-  "periodo": "P1-2025"
-}
-```
-
----
-
-## 📦 Estructura de respuestas
-
-**Éxito:**
-```json
-{ "success": true, "data": { ... } }
-```
-
-**Error:**
-```json
-{ "success": false, "message": "Descripción del error" }
-```
-
-## 🔢 Códigos de estado HTTP
-
-| Código | Uso |
-|--------|-----|
-| 200 | Consulta o actualización exitosa |
-| 201 | Recurso creado correctamente |
-| 400 | Datos incompletos o inválidos |
-| 404 | Recurso no encontrado |
-
----
-
-## 🗂️ Estructura del proyecto
+# 📂 Estructura del proyecto
 
 ```
-colegio-api/
+colegio-api
+│
+├── routes
+│   ├── estudiantes.js
+│   ├── profesores.js
+│   ├── materias.js
+│   └── notas.js
+│
+├── db.js
 ├── index.js
 ├── package.json
-├── README.md
-└── routes/
-    ├── estudiantes.js
-    ├── profesores.js
-    ├── materias.js
-    └── notas.js
+├── .gitignore
+└── README.md
 ```
+
+---
+
+# 🗄️ Base de datos
+
+La aplicación utiliza **SQLite** como base de datos local.
+
+Archivo de base de datos:
+
+```
+colegio.db
+```
+
+---
+
+# 📊 Diagrama ER
+
+Aquí se muestra el diagrama de entidades y relaciones del sistema:
+
+*(Inserta aquí la imagen exportada de draw.io)*
+
+```
+PROFESORES (1) ──── (N) MATERIAS
+ESTUDIANTES (1) ─── (N) NOTAS
+MATERIAS (1) ────── (N) NOTAS
+```
+
+---
+
+# 📚 Diccionario de datos
+
+## Tabla: profesores
+
+| Campo        | Tipo    | Descripción                       |
+| ------------ | ------- | --------------------------------- |
+| id           | INTEGER | Identificador único del profesor  |
+| nombre       | TEXT    | Nombre completo                   |
+| email        | TEXT    | Correo electrónico único          |
+| especialidad | TEXT    | Área de enseñanza                 |
+| activo       | BOOLEAN | Indica si el profesor está activo |
+
+---
+
+## Tabla: estudiantes
+
+| Campo  | Tipo    | Descripción                  |
+| ------ | ------- | ---------------------------- |
+| id     | INTEGER | Identificador del estudiante |
+| nombre | TEXT    | Nombre completo              |
+| email  | TEXT    | Correo electrónico único     |
+| grado  | TEXT    | Grado académico              |
+| edad   | INTEGER | Edad del estudiante          |
+| activo | BOOLEAN | Estado del estudiante        |
+
+---
+
+## Tabla: materias
+
+| Campo      | Tipo    | Descripción                     |
+| ---------- | ------- | ------------------------------- |
+| id         | INTEGER | Identificador de la materia     |
+| nombre     | TEXT    | Nombre de la materia            |
+| codigo     | TEXT    | Código único de la materia      |
+| profesorId | INTEGER | Profesor que imparte la materia |
+| creditos   | INTEGER | Número de créditos              |
+| activa     | BOOLEAN | Estado de la materia            |
+
+---
+
+## Tabla: notas
+
+| Campo        | Tipo    | Descripción                 |
+| ------------ | ------- | --------------------------- |
+| id           | INTEGER | Identificador de la nota    |
+| estudianteId | INTEGER | Estudiante al que pertenece |
+| materiaId    | INTEGER | Materia evaluada            |
+| nota         | REAL    | Calificación (0.0 - 5.0)    |
+| periodo      | TEXT    | Periodo académico           |
+| fecha        | DATE    | Fecha de registro           |
+
+---
+
+# 🔗 Endpoints de la API
+
+## 👨‍🏫 Profesores
+
+| Método | Endpoint        | Descripción                  |
+| ------ | --------------- | ---------------------------- |
+| GET    | /profesores     | Obtener todos los profesores |
+| GET    | /profesores/:id | Obtener profesor por ID      |
+| POST   | /profesores     | Crear profesor               |
+| PUT    | /profesores/:id | Actualizar profesor          |
+| DELETE | /profesores/:id | Eliminar profesor            |
+
+---
+
+## 🎓 Estudiantes
+
+| Método | Endpoint         | Descripción           |
+| ------ | ---------------- | --------------------- |
+| GET    | /estudiantes     | Listar estudiantes    |
+| GET    | /estudiantes/:id | Obtener estudiante    |
+| POST   | /estudiantes     | Crear estudiante      |
+| PUT    | /estudiantes/:id | Actualizar estudiante |
+| DELETE | /estudiantes/:id | Eliminar estudiante   |
+
+---
+
+## 📚 Materias
+
+| Método | Endpoint      | Descripción        |
+| ------ | ------------- | ------------------ |
+| GET    | /materias     | Listar materias    |
+| POST   | /materias     | Crear materia      |
+| PUT    | /materias/:id | Actualizar materia |
+| DELETE | /materias/:id | Eliminar materia   |
+
+---
+
+## 📝 Notas
+
+| Método | Endpoint   | Descripción     |
+| ------ | ---------- | --------------- |
+| GET    | /notas     | Listar notas    |
+| POST   | /notas     | Registrar nota  |
+| PUT    | /notas/:id | Actualizar nota |
+| DELETE | /notas/:id | Eliminar nota   |
+
+---
+
+# ⚙️ Instalación del proyecto
+
+1️⃣ Clonar el repositorio
+
+```
+git clone https://github.com/tuusuario/colegio-api.git
+```
+
+2️⃣ Instalar dependencias
+
+```
+npm install
+```
+
+3️⃣ Ejecutar el servidor
+
+```
+node index.js
+```
+
+o con nodemon
+
+```
+npm run dev
+```
+
+---
+
+# 🧪 Pruebas de la API
+
+Las pruebas se realizaron utilizando **Postman**, verificando:
+
+* Casos correctos
+* Validaciones de campos obligatorios
+* Manejo de errores (400, 404)
+
+---
+
+# ❗ Manejo de errores
+
+La API incluye validaciones para:
+
+* Campos obligatorios
+* Formato de email
+* Notas entre 0.0 y 5.0
+* Relaciones entre entidades
+* Recursos no encontrados
+
+---
+
+# 👨‍💻 Autores
+
+**Diego Quintero**
+**Diego Bermudez**
+
+Proyecto académico – SENA
+Tecnología en Análisis y Desarrollo de Software

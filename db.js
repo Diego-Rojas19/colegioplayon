@@ -3,15 +3,17 @@
 const sqlite3 = require('sqlite3').verbose();
 
 const db = new sqlite3.Database('./colegio.db', (err) => {
-  if (err) console.error('❌ Error conectando a la base de datos:', err.message);
-  else console.log('✅ Base de datos conectada → colegio.db');
+  if (err) {
+    console.error('❌ Error conectando a la base de datos:', err.message);
+  } else {
+    console.log('✅ Base de datos conectada → colegio.db');
+  }
 });
 
 // Activar llaves foráneas
 db.run('PRAGMA foreign_keys = ON');
 
 db.serialize(() => {
-
   // ─────────────────────────────────────────────
   // TABLA: profesores
   // ─────────────────────────────────────────────
@@ -23,10 +25,7 @@ db.serialize(() => {
       especialidad TEXT    NOT NULL,
       activo       INTEGER DEFAULT 1 CHECK(activo IN (0,1))
     )
-  `, (err) => {
-    if (err) console.error('Error creando tabla profesores:', err.message);
-    else console.log('✅ Tabla profesores lista');
-  });
+  `);
 
   // ─────────────────────────────────────────────
   // TABLA: estudiantes
@@ -40,10 +39,7 @@ db.serialize(() => {
       edad   INTEGER NOT NULL CHECK(edad >= 5 AND edad <= 25),
       activo INTEGER DEFAULT 1 CHECK(activo IN (0,1))
     )
-  `, (err) => {
-    if (err) console.error('Error creando tabla estudiantes:', err.message);
-    else console.log('✅ Tabla estudiantes lista');
-  });
+  `);
 
   // ─────────────────────────────────────────────
   // TABLA: materias
@@ -59,10 +55,7 @@ db.serialize(() => {
       activa     INTEGER DEFAULT 1 CHECK(activa IN (0,1)),
       FOREIGN KEY (profesorId) REFERENCES profesores(id)
     )
-  `, (err) => {
-    if (err) console.error('Error creando tabla materias:', err.message);
-    else console.log('✅ Tabla materias lista');
-  });
+  `);
 
   // ─────────────────────────────────────────────
   // TABLA: notas
@@ -80,10 +73,7 @@ db.serialize(() => {
       FOREIGN KEY (estudianteId) REFERENCES estudiantes(id),
       FOREIGN KEY (materiaId)    REFERENCES materias(id)
     )
-  `, (err) => {
-    if (err) console.error('Error creando tabla notas:', err.message);
-    else console.log('✅ Tabla notas lista');
-  });
+  `);
 
   // ─────────────────────────────────────────────
   // DATOS DE PRUEBA (solo si las tablas están vacías)
@@ -119,7 +109,6 @@ db.serialize(() => {
 
     console.log('✅ Datos de prueba insertados');
   });
-
 });
 
 module.exports = db;

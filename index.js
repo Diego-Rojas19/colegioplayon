@@ -1,9 +1,11 @@
 // index.js — Servidor principal API Colegio
 
+require('dotenv').config(); // ← AGREGADO
+
 const express = require('express');
 const app = express();
 
-const db = require('./db'); // conecta la base de datos al iniciar
+const db = require('./db');
 
 app.use(express.json());
 
@@ -19,28 +21,7 @@ app.get('/', (req, res) => {
     success: true,
     message: '🏫 API REST - Sistema de Colegio | SENA Proyecto 5',
     version: '2.0.0 - SQLite',
-    endpoints: {
-      'GET    /estudiantes':     'Listar estudiantes (filtros: ?nombre=&grado=&activo=)',
-      'GET    /estudiantes/:id': 'Ver un estudiante',
-      'POST   /estudiantes':     'Crear estudiante { nombre, email, grado, edad }',
-      'PUT    /estudiantes/:id': 'Actualizar estudiante',
-      'DELETE /estudiantes/:id': 'Eliminar estudiante',
-      'GET    /profesores':      'Listar profesores (filtros: ?nombre=&especialidad=)',
-      'GET    /profesores/:id':  'Ver un profesor',
-      'POST   /profesores':      'Crear profesor { nombre, email, especialidad }',
-      'PUT    /profesores/:id':  'Actualizar profesor',
-      'DELETE /profesores/:id':  'Eliminar profesor',
-      'GET    /materias':        'Listar materias (filtros: ?nombre=&activa=)',
-      'GET    /materias/:id':    'Ver una materia',
-      'POST   /materias':        'Crear materia { nombre, codigo, profesorId, creditos }',
-      'PUT    /materias/:id':    'Actualizar materia',
-      'DELETE /materias/:id':    'Eliminar materia',
-      'GET    /notas':           'Listar notas (filtros: ?estudianteId=&materiaId=&periodo=)',
-      'GET    /notas/:id':       'Ver una nota',
-      'POST   /notas':           'Crear nota { estudianteId, materiaId, nota, periodo }',
-      'PUT    /notas/:id':       'Actualizar nota',
-      'DELETE /notas/:id':       'Eliminar nota'
-    }
+    endpoints: { /* ... */ }
   });
 });
 
@@ -55,6 +36,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: 'Error interno del servidor' });
 });
 
-const server = app.listen(3000, () =>
+// ─── Puerto desde variable de entorno ─────────────────────
+const PORT = process.env.PORT || 3000; // ← MODIFICADO
+const server = app.listen(PORT, () =>
   console.log(`🏫 API Colegio corriendo en http://localhost:${server.address().port}`)
 );
+```
+
+Y en tu archivo `.env` agregas:
+```
+PORT=3000

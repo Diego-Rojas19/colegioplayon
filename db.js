@@ -1,108 +1,94 @@
-// routes/estudiantes.js — CRUD de estudiantes con id opcional en POST
+// =============================
+// CONFIGURACIÓN DE BASE DE DATOS
+// =============================
 
-const express = require('express');
-const router = express.Router();
-const db = require('../db');
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
-// ─── GET todos los estudiantes ─────────────────────
-router.get('/', (req, res) => {
-  db.all('SELECT * FROM estudiantes ORDER BY id ASC', [], (err, rows) => {
-    if (err) return res.status(500).json({ success:false, message:err.message });
+// Nombre del archivo de la base de datos
+const db_name = path.join(__dirname, 'colegio.db');
 
-    res.json({
-      success:true,
-      total: rows.length,
-      data: rows.map(e => ({ ...e, activo: e.activo === 1 }))
-    });
-  });
+// Conexión a la base de datos
+const db = new sqlite3.Database(db_name, (err) => {
+  if (err) {
+    console.error('❌ Error al abrir la base de datos:', err.message);
+  } else {
+    console.log('✅ Base de datos conectada en', db_name);
+  }
 });
 
-// ─── GET estudiante por id ─────────────────────────
-router.get('/:id', (req, res) => {
-  db.get('SELECT * FROM estudiantes WHERE id=?', [req.params.id], (err,row) => {
-    if (err) return res.status(500).json({ success:false, message:err.message });
+// =============================
+// CREACIÓN DE TABLAS
+// =============================
 
-    if (!row)
-      return res.status(404).json({ success:false, message:'Estudiante no encontrado' });
+db.serialize(() => {
+  // Tabla estudiantes (sin AUTOINCREMENT para permitir IDs manuales)
+  db.run(`CREATE TABLE IF NOT EXISTS estudiantes (
+    id INTEGER PRIMARY KEY,
+    nombre TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    grado TEXT NOT NULL,
+    edad INTEGER NOT NULL CHECK(edad >= 5 AND edad <= 25),
+    activo INTEGER DEFAULT 1 CHECK(activo IN (0,1))
+  )`);
 
-    res.json({
-      success:true,
-      data:{ ...row, activo: row.activo === 1 }
-    });
-  });
+  // Tabla profesores
+  db.run(`CREATE TABLE IF NOT EXISTS profesores (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    especialidad TEXT NOT NULL
+  )`);
+
+  // Tabla materias
+  db.run(`CREATE TABLE IF NOT EXISTS materias (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    descripcion TEXT
+  )`);
+
+  // Tabla cursos
+  db.run(`CREATE TABLE IF NOT EXISTS cursos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    grado TEXT NOT NULL
+  )`);
+
+  // Tabla notas
+  db.run(`CREATE TABLE IF NOT EXISTS notas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    estudiante_id INTEGER NOT NULL,
+    materia_id INTEGER NOT NULL,
+    nota REAL NOT NULL CHECK(nota >= 0 AND nota <= 5),
+    FOREIGN KEY(estudiante_id) REFERENCES estudiantes(id),
+    FOREIGN KEY(materia_id) REFERENCES materias(id)
+  )`);
+
+  // Tabla asistencias
+  db.run(`CREATE TABLE IF NOT EXISTS asistencias (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    estudiante_id INTEGER NOT NULL,
+    materia_id INTEGER NOT NULL,
+    fecha TEXT NOT NULL,
+    FOREIGN KEY(estudiante_id) REFERENCES estudiantes(id),
+    FOREIGN KEY(materia_id) REFERENCES materias(id)
+  )`);
+
+  // Tabla horarios
+  db.run(`CREATE TABLE IF NOT EXISTS horarios (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    curso_id INTEGER NOT NULL,
+    materia_id INTEGER NOT NULL,
+    profesor_id INTEGER NOT NULL,
+    dia TEXT NOT NULL,
+    hora TEXT NOT NULL,
+    FOREIGN KEY(curso_id) REFERENCES cursos(id),
+    FOREIGN KEY(materia_id) REFERENCES materias(id),
+    FOREIGN KEY(profesor_id) REFERENCES profesores(id)
+  )`);
 });
 
-// ─── POST crear estudiante ─────────────────────────
-// Ahora acepta un campo "id" opcional
-router.post('/', (req, res) => {
-  const { id, nombre, email, grado, edad } = req.body;
-
-  if (!nombre || !email || !grado || !edad)
-    return res.status(400).json({
-      success:false,
-      message:'nombre, email, grado y edad son obligatorios'
-    });
-
-  const query = id
-    ? `INSERT INTO estudiantes (id, nombre, email, grado, edad) VALUES (?,?,?,?,?)`
-    : `INSERT INTO estudiantes (nombre, email, grado, edad) VALUES (?,?,?,?)`;
-
-  const params = id
-    ? [id, nombre, email, grado, edad]
-    : [nombre, email, grado, edad];
-
-  db.run(query, params, function(err){
-    if (err)
-      return res.status(500).json({ success:false, message:err.message });
-
-    db.get('SELECT * FROM estudiantes WHERE id=?', [id || this.lastID], (err,nuevo) => {
-      res.status(201).json({
-        success:true,
-        message:'Estudiante creado',
-        data:{ ...nuevo, activo: nuevo.activo === 1 }
-      });
-    });
-  });
-});
-
-// ─── PUT actualizar estudiante ─────────────────────
-router.put('/:id', (req, res) => {
-  const { nombre, email, grado, edad, activo } = req.body;
-
-  db.run(
-    `UPDATE estudiantes SET nombre=?, email=?, grado=?, edad=?, activo=? WHERE id=?`,
-    [nombre, email, grado, edad, activo ? 1:0, req.params.id],
-    function(err){
-      if (err)
-        return res.status(500).json({ success:false, message:err.message });
-
-      db.get('SELECT * FROM estudiantes WHERE id=?', [req.params.id], (err,actualizado) => {
-        if (!actualizado)
-          return res.status(404).json({ success:false, message:'Estudiante no encontrado' });
-
-        res.json({
-          success:true,
-          message:'Estudiante actualizado',
-          data:{ ...actualizado, activo: actualizado.activo === 1 }
-        });
-      });
-    }
-  );
-});
-
-// ─── DELETE estudiante ─────────────────────────────
-router.delete('/:id', (req, res) => {
-  db.get('SELECT * FROM estudiantes WHERE id=?', [req.params.id], (err,row) => {
-    if (!row)
-      return res.status(404).json({ success:false, message:'Estudiante no encontrado' });
-
-    db.run('DELETE FROM estudiantes WHERE id=?', [req.params.id], err => {
-      if (err)
-        return res.status(500).json({ success:false, message:err.message });
-
-      res.json({ success:true, message:'Estudiante eliminado' });
-    });
-  });
-});
-
-module.exports = router;
+// =============================
+// EXPORTAR CONEXIÓN
+// =============================
+module.exports = db;

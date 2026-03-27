@@ -2,9 +2,9 @@ const sqlite3 = require('sqlite3').verbose();
 
 const db = new sqlite3.Database('./colegio.db', (err) => {
   if (err) {
-    console.error('❌ Error conectando:', err.message);
+    console.error(' Error conectando:', err.message);
   } else {
-    console.log('✅ Base de datos conectada → colegio.db');
+    console.log(' Base de datos conectada → colegio.db');
   }
 });
 

@@ -1,154 +1,104 @@
-// routes/cursos.js — CRUD de cursos
+// routes/estudiantes.js — CRUD de estudiantes
 
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// ─── GET todos los cursos ─────────────────────
+// ─── GET todos los estudiantes ─────────────────────
 router.get('/', (req, res) => {
-  db.all('SELECT * FROM cursos ORDER BY id ASC', [], (err, rows) => {
+  db.all('SELECT * FROM estudiantes ORDER BY id ASC', [], (err, rows) => {
     if (err) return res.status(500).json({ success:false, message:err.message });
 
     res.json({
       success:true,
       total: rows.length,
-      data: rows.map(c => ({ ...c, activo: c.activo === 1 }))
+      data: rows.map(e => ({ ...e, activo: e.activo === 1 }))
     });
   });
 });
 
-// ─── GET curso por id ─────────────────────────
+// ─── GET estudiante por id ─────────────────────────
 router.get('/:id', (req, res) => {
-  db.get('SELECT * FROM cursos WHERE id=?', [req.params.id], (err,row) => {
-
+  db.get('SELECT * FROM estudiantes WHERE id=?', [req.params.id], (err,row) => {
     if (err) return res.status(500).json({ success:false, message:err.message });
 
     if (!row)
-      return res.status(404).json({
-        success:false,
-        message:'Curso no encontrado'
-      });
+      return res.status(404).json({ success:false, message:'Estudiante no encontrado' });
 
     res.json({
       success:true,
       data:{ ...row, activo: row.activo === 1 }
     });
-
   });
 });
 
-// ─── POST crear curso ─────────────────────────
+// ─── POST crear estudiante ─────────────────────────
 router.post('/', (req, res) => {
+  const { nombre, email, grado, edad } = req.body;
 
-  const { estudianteId, materiaId } = req.body;
-
-  if (!estudianteId || !materiaId)
+  if (!nombre || !email || !grado || !edad)
     return res.status(400).json({
       success:false,
-      message:'estudianteId y materiaId son obligatorios'
+      message:'nombre, email, grado y edad son obligatorios'
     });
 
   db.run(
-    `INSERT INTO cursos (estudianteId, materiaId)
-     VALUES (?,?)`,
-    [estudianteId, materiaId],
+    `INSERT INTO estudiantes (nombre, email, grado, edad)
+     VALUES (?,?,?,?)`,
+    [nombre, email, grado, edad],
     function(err){
-
       if (err)
-        return res.status(500).json({
-          success:false,
-          message:err.message
-        });
+        return res.status(500).json({ success:false, message:err.message });
 
-      db.get('SELECT * FROM cursos WHERE id=?',
-      [this.lastID],
-      (err,nuevo)=>{
-
+      db.get('SELECT * FROM estudiantes WHERE id=?', [this.lastID], (err,nuevo) => {
         res.status(201).json({
           success:true,
-          message:'Curso creado',
+          message:'Estudiante creado',
           data:{ ...nuevo, activo: nuevo.activo === 1 }
         });
-
       });
-
-    });
-
+    }
+  );
 });
 
-// ─── PUT actualizar curso ─────────────────────
+// ─── PUT actualizar estudiante ─────────────────────
 router.put('/:id', (req, res) => {
+  const { nombre, email, grado, edad, activo } = req.body;
 
-  const { activo } = req.body;
+  db.run(
+    `UPDATE estudiantes SET nombre=?, email=?, grado=?, edad=?, activo=? WHERE id=?`,
+    [nombre, email, grado, edad, activo ? 1:0, req.params.id],
+    function(err){
+      if (err)
+        return res.status(500).json({ success:false, message:err.message });
 
-  db.get('SELECT * FROM cursos WHERE id=?',
-  [req.params.id],
-  (err,row)=>{
+      db.get('SELECT * FROM estudiantes WHERE id=?', [req.params.id], (err,actualizado) => {
+        if (!actualizado)
+          return res.status(404).json({ success:false, message:'Estudiante no encontrado' });
 
-    if (!row)
-      return res.status(404).json({
-        success:false,
-        message:'Curso no encontrado'
+        res.json({
+          success:true,
+          message:'Estudiante actualizado',
+          data:{ ...actualizado, activo: actualizado.activo === 1 }
+        });
       });
-
-    db.run(
-      'UPDATE cursos SET activo=? WHERE id=?',
-      [activo ? 1:0, req.params.id],
-      function(err){
-
-        if (err)
-          return res.status(500).json({
-            success:false,
-            message:err.message
-          });
-
-        db.get(
-          'SELECT * FROM cursos WHERE id=?',
-          [req.params.id],
-          (err,actualizado)=>{
-
-            res.json({
-              success:true,
-              message:'Curso actualizado',
-              data:{ ...actualizado, activo: actualizado.activo === 1 }
-            });
-
-          });
-
-      });
-
-  });
-
+    }
+  );
 });
 
-// ─── DELETE curso ─────────────────────────────
+// ─── DELETE estudiante ─────────────────────────────
 router.delete('/:id', (req, res) => {
+  db.get('SELECT * FROM estudiantes WHERE id=?', [req.params.id], (err,row) => {
+    if (!row)
+      return res.status(404).json({ success:false, message:'Estudiante no encontrado' });
 
-  db.get(
-    'SELECT * FROM cursos WHERE id=?',
-    [req.params.id],
-    (err,row)=>{
+    db.run('DELETE FROM estudiantes WHERE id=?', [req.params.id], err => {
+      if (err)
+        return res.status(500).json({ success:false, message:err.message });
 
-      if (!row)
-        return res.status(404).json({
-          success:false,
-          message:'Curso no encontrado'
-        });
-
-      db.run(
-        'DELETE FROM cursos WHERE id=?',
-        [req.params.id],
-        err=>{
-
-          res.json({
-            success:true,
-            message:'Curso eliminado'
-          });
-
-        });
-
+      res.json({ success:true, message:'Estudiante eliminado' });
     });
-
+  });
 });
 
 module.exports = router;

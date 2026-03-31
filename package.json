@@ -4,7 +4,7 @@
   "description": "API REST - Sistema de Colegio | SENA Proyecto 5",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node seed.js && node index.js",
     "dev": "nodemon index.js",
     "postinstall": "npm rebuild sqlite3"
   },

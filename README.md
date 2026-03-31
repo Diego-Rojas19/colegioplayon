@@ -1,52 +1,66 @@
-# 🏫 API REST - Sistema de Colegio
+# 🏫 API REST – Sistema Educativo Colegio Playon
 
-**Proyecto SENA – Desarrollo de APIs REST con Node.js**
+Proyecto académico desarrollado para el programa **Análisis y Desarrollo de Software – SENA**.
 
-Esta API permite gestionar la información de un sistema académico básico de un colegio, incluyendo estudiantes, profesores, materias, notas, cursos, horarios y asistencias.
+La API permite gestionar la información académica de un colegio, incluyendo estudiantes, profesores, materias, cursos, notas, asistencias y horarios mediante operaciones **CRUD completas** siguiendo el estilo **REST**.
 
-La aplicación fue desarrollada usando **Node.js, Express y SQLite** y permite realizar operaciones **CRUD completas** a través de endpoints REST.
+El sistema permite centralizar la información académica y acceder a ella desde cualquier cliente (web, móvil o Postman).
+
+---
+
+# 🎯 Objetivo del proyecto
+
+Desarrollar una API REST funcional que permita administrar el sistema académico del **Colegio Playon**, aplicando:
+
+* Diseño de base de datos relacional
+* Arquitectura REST
+* Validaciones de negocio
+* Middleware de autenticación
+* Despliegue en la nube
+* Documentación técnica
 
 ---
 
 # 🚀 Tecnologías utilizadas
 
-* Node.js
-* Express.js
-* SQLite3
-* Postman (para pruebas de API)
-* draw.io (para diagrama ER)
-* Render (para despliegue en la nube)
+| Tecnología | Uso                      |
+| ---------- | ------------------------ |
+| Node.js    | Entorno de ejecución     |
+| Express.js | Framework backend        |
+| SQLite3    | Base de datos relacional |
+| dotenv     | Variables de entorno     |
+| Postman    | Pruebas de endpoints     |
+| GitHub     | Control de versiones     |
+| Render     | Despliegue en la nube    |
+| draw.io    | Diagrama ER              |
 
 ---
 
-# 🌐 Deploy en Render
+# 🌐 Deploy en producción
 
-La API está desplegada y disponible públicamente en:
+URL pública de la API:
 
-```
 https://colegio-api-2.onrender.com
-```
 
-### Endpoints en producción
+### Endpoints principales
 
-| Recurso      | URL                                                    |
-| ------------ | ------------------------------------------------------ |
-| Raíz         | https://colegio-api-2.onrender.com                     |
-| Estudiantes  | https://colegio-api-2.onrender.com/api/estudiantes     |
-| Profesores   | https://colegio-api-2.onrender.com/api/profesores      |
-| Materias     | https://colegio-api-2.onrender.com/api/materias        |
-| Notas        | https://colegio-api-2.onrender.com/api/notas           |
-| Cursos       | https://colegio-api-2.onrender.com/api/cursos          |
-| Horarios     | https://colegio-api-2.onrender.com/api/horarios        |
-| Asistencias  | https://colegio-api-2.onrender.com/api/asistencias     |
+| Recurso     | Endpoint         |
+| ----------- | ---------------- |
+| Root        | /                |
+| Estudiantes | /api/estudiantes |
+| Profesores  | /api/profesores  |
+| Materias    | /api/materias    |
+| Cursos      | /api/cursos      |
+| Notas       | /api/notas       |
+| Horarios    | /api/horarios    |
+| Asistencias | /api/asistencias |
 
-> ⚠️ Todos los endpoints requieren el header `password: MiPasswordSegura2024`
+⚠️ Todos los endpoints requieren autenticación por header.
 
 ---
 
 # 📂 Estructura del proyecto
 
-```
 colegioplayon
 │
 ├── routes
@@ -60,286 +74,279 @@ colegioplayon
 │
 ├── db.js
 ├── index.js
+├── seed.js
 ├── package.json
 ├── .env
 ├── .gitignore
 └── README.md
-```
 
 ---
 
 # 🗄️ Base de datos
 
-La aplicación utiliza **SQLite** como base de datos local.
+La aplicación utiliza SQLite como base de datos local:
 
-```
 colegio.db
-```
+
+El sistema contiene 7 tablas principales relacionadas entre sí.
 
 ---
 
-# 📊 Diagrama ER
+# 📊 Modelo Entidad – Relación
 
-```
-PROFESORES (1) ──── (N) MATERIAS
+Relaciones principales del sistema:
+
+PROFESORES (1) ─── (N) MATERIAS
 ESTUDIANTES (1) ─── (N) NOTAS
-MATERIAS (1) ────── (N) NOTAS
+MATERIAS (1) ─── (N) NOTAS
 ESTUDIANTES (1) ─── (N) CURSOS
-MATERIAS (1) ────── (N) CURSOS
-CURSOS (1) ─────── (N) ASISTENCIAS
-MATERIAS (1) ────── (N) HORARIOS
-```
+MATERIAS (1) ─── (N) CURSOS
+CURSOS (1) ─── (N) ASISTENCIAS
+MATERIAS (1) ─── (N) HORARIOS
 
 ---
 
 # 📚 Diccionario de datos
 
-## Tabla: profesores
+## profesores
 
-| Campo        | Tipo    | Descripción                       |
-| ------------ | ------- | --------------------------------- |
-| id           | INTEGER | Identificador único del profesor  |
-| nombre       | TEXT    | Nombre completo                   |
-| email        | TEXT    | Correo electrónico único          |
-| especialidad | TEXT    | Área de enseñanza                 |
-| activo       | BOOLEAN | Indica si el profesor está activo |
-
----
-
-## Tabla: estudiantes
-
-| Campo  | Tipo    | Descripción                  |
-| ------ | ------- | ---------------------------- |
-| id     | INTEGER | Identificador del estudiante |
-| nombre | TEXT    | Nombre completo              |
-| email  | TEXT    | Correo electrónico único     |
-| grado  | TEXT    | Grado académico              |
-| edad   | INTEGER | Edad del estudiante          |
-| activo | BOOLEAN | Estado del estudiante        |
+| campo        | tipo    |
+| ------------ | ------- |
+| id           | INTEGER |
+| nombre       | TEXT    |
+| email        | TEXT    |
+| especialidad | TEXT    |
+| activo       | BOOLEAN |
 
 ---
 
-## Tabla: materias
+## estudiantes
 
-| Campo      | Tipo    | Descripción                     |
-| ---------- | ------- | ------------------------------- |
-| id         | INTEGER | Identificador de la materia     |
-| nombre     | TEXT    | Nombre de la materia            |
-| codigo     | TEXT    | Código único de la materia      |
-| profesorId | INTEGER | Profesor que imparte la materia |
-| creditos   | INTEGER | Número de créditos              |
-| activa     | BOOLEAN | Estado de la materia            |
-
----
-
-## Tabla: notas
-
-| Campo        | Tipo    | Descripción                 |
-| ------------ | ------- | --------------------------- |
-| id           | INTEGER | Identificador de la nota    |
-| estudianteId | INTEGER | Estudiante al que pertenece |
-| materiaId    | INTEGER | Materia evaluada            |
-| nota         | REAL    | Calificación (0.0 - 5.0)    |
-| periodo      | TEXT    | Periodo académico           |
-| fecha        | DATE    | Fecha de registro           |
+| campo  | tipo    |
+| ------ | ------- |
+| id     | INTEGER |
+| nombre | TEXT    |
+| email  | TEXT    |
+| grado  | TEXT    |
+| edad   | INTEGER |
+| activo | BOOLEAN |
 
 ---
 
-## Tabla: cursos
+## materias
 
-| Campo        | Tipo    | Descripción                        |
-| ------------ | ------- | ---------------------------------- |
-| id           | INTEGER | Identificador del curso            |
-| estudianteId | INTEGER | Estudiante inscrito                |
-| materiaId    | INTEGER | Materia en la que está inscrito    |
-| fecha        | DATE    | Fecha de inscripción               |
-| activo       | BOOLEAN | Estado de la inscripción           |
-
----
-
-## Tabla: horarios
-
-| Campo     | Tipo    | Descripción                  |
-| --------- | ------- | ---------------------------- |
-| id        | INTEGER | Identificador del horario    |
-| materiaId | INTEGER | Materia asociada             |
-| dia       | TEXT    | Día de la semana             |
-| horaInicio| TEXT    | Hora de inicio               |
-| horaFin   | TEXT    | Hora de finalización         |
-| aula      | TEXT    | Aula asignada                |
+| campo      | tipo    |
+| ---------- | ------- |
+| id         | INTEGER |
+| nombre     | TEXT    |
+| codigo     | TEXT    |
+| profesorId | INTEGER |
+| creditos   | INTEGER |
+| activa     | BOOLEAN |
 
 ---
 
-## Tabla: asistencias
+## cursos
 
-| Campo        | Tipo    | Descripción                      |
-| ------------ | ------- | -------------------------------- |
-| id           | INTEGER | Identificador de la asistencia   |
-| estudianteId | INTEGER | Estudiante                       |
-| materiaId    | INTEGER | Materia                          |
-| fecha        | DATE    | Fecha de la clase                |
-| presente     | BOOLEAN | Si asistió (1) o no (0)          |
+| campo        | tipo    |
+| ------------ | ------- |
+| id           | INTEGER |
+| estudianteId | INTEGER |
+| materiaId    | INTEGER |
+| activo       | BOOLEAN |
+
+---
+
+## notas
+
+| campo        | tipo    |
+| ------------ | ------- |
+| id           | INTEGER |
+| estudianteId | INTEGER |
+| materiaId    | INTEGER |
+| nota         | REAL    |
+| periodo      | TEXT    |
+
+---
+
+## asistencias
+
+| campo        | tipo    |
+| ------------ | ------- |
+| id           | INTEGER |
+| estudianteId | INTEGER |
+| materiaId    | INTEGER |
+| fecha        | DATE    |
+| presente     | BOOLEAN |
+
+---
+
+## horarios
+
+| campo      | tipo    |
+| ---------- | ------- |
+| id         | INTEGER |
+| materiaId  | INTEGER |
+| dia        | TEXT    |
+| horaInicio | TEXT    |
+| horaFin    | TEXT    |
+| aula       | TEXT    |
 
 ---
 
 # 🔗 Endpoints de la API
 
-## 👨‍🏫 Profesores
+## Profesores
 
-| Método | Endpoint            | Descripción                  |
-| ------ | ------------------- | ---------------------------- |
-| GET    | /api/profesores     | Obtener todos los profesores |
-| GET    | /api/profesores/:id | Obtener profesor por ID      |
-| POST   | /api/profesores     | Crear profesor               |
-| PUT    | /api/profesores/:id | Actualizar profesor          |
-| DELETE | /api/profesores/:id | Eliminar profesor            |
+GET /api/profesores
+GET /api/profesores/:id
+POST /api/profesores
+PUT /api/profesores/:id
+DELETE /api/profesores/:id
 
 ---
 
-## 🎓 Estudiantes
+## Estudiantes
 
-| Método | Endpoint             | Descripción           |
-| ------ | -------------------- | --------------------- |
-| GET    | /api/estudiantes     | Listar estudiantes    |
-| GET    | /api/estudiantes/:id | Obtener estudiante    |
-| POST   | /api/estudiantes     | Crear estudiante      |
-| PUT    | /api/estudiantes/:id | Actualizar estudiante |
-| DELETE | /api/estudiantes/:id | Eliminar estudiante   |
+GET /api/estudiantes
+GET /api/estudiantes/:id
+POST /api/estudiantes
+PUT /api/estudiantes/:id
+DELETE /api/estudiantes/:id
 
 ---
 
-## 📚 Materias
+## Materias
 
-| Método | Endpoint          | Descripción        |
-| ------ | ----------------- | ------------------ |
-| GET    | /api/materias     | Listar materias    |
-| GET    | /api/materias/:id | Obtener materia    |
-| POST   | /api/materias     | Crear materia      |
-| PUT    | /api/materias/:id | Actualizar materia |
-| DELETE | /api/materias/:id | Eliminar materia   |
+GET /api/materias
+GET /api/materias/:id
+POST /api/materias
+PUT /api/materias/:id
+DELETE /api/materias/:id
 
 ---
 
-## 📝 Notas
+## Cursos
 
-| Método | Endpoint       | Descripción     |
-| ------ | -------------- | --------------- |
-| GET    | /api/notas     | Listar notas    |
-| GET    | /api/notas/:id | Obtener nota    |
-| POST   | /api/notas     | Registrar nota  |
-| PUT    | /api/notas/:id | Actualizar nota |
-| DELETE | /api/notas/:id | Eliminar nota   |
+GET /api/cursos
+GET /api/cursos/:id
+POST /api/cursos
+PUT /api/cursos/:id
+DELETE /api/cursos/:id
 
 ---
 
-## 🗂️ Cursos
+## Notas
 
-| Método | Endpoint        | Descripción          |
-| ------ | --------------- | -------------------- |
-| GET    | /api/cursos     | Listar cursos        |
-| GET    | /api/cursos/:id | Obtener curso por ID |
-| POST   | /api/cursos     | Crear curso          |
-| PUT    | /api/cursos/:id | Actualizar curso     |
-| DELETE | /api/cursos/:id | Eliminar curso       |
+GET /api/notas
+GET /api/notas/:id
+POST /api/notas
+PUT /api/notas/:id
+DELETE /api/notas/:id
 
 ---
 
-## 🕐 Horarios
+## Horarios
 
-| Método | Endpoint          | Descripción          |
-| ------ | ----------------- | -------------------- |
-| GET    | /api/horarios     | Listar horarios      |
-| GET    | /api/horarios/:id | Obtener horario      |
-| POST   | /api/horarios     | Crear horario        |
-| PUT    | /api/horarios/:id | Actualizar horario   |
-| DELETE | /api/horarios/:id | Eliminar horario     |
+GET /api/horarios
+GET /api/horarios/:id
+POST /api/horarios
+PUT /api/horarios/:id
+DELETE /api/horarios/:id
 
 ---
 
-## ✅ Asistencias
+## Asistencias
 
-| Método | Endpoint             | Descripción             |
-| ------ | -------------------- | ----------------------- |
-| GET    | /api/asistencias     | Listar asistencias      |
-| GET    | /api/asistencias/:id | Obtener asistencia      |
-| POST   | /api/asistencias     | Registrar asistencia    |
-| PUT    | /api/asistencias/:id | Actualizar asistencia   |
-| DELETE | /api/asistencias/:id | Eliminar asistencia     |
-
----
-
-# ⚙️ Instalación del proyecto
-
-1️⃣ Clonar el repositorio
-
-```
-git clone https://github.com/tuusuario/colegio-api.git
-```
-
-2️⃣ Instalar dependencias
-
-```
-npm install
-```
-
-3️⃣ Configurar el archivo `.env`
-
-```
-PORT=3000
-API_PASSWORD=MiPasswordSegura2024
-NODE_ENV=production
-```
-
-4️⃣ Ejecutar el servidor
-
-```
-node index.js
-```
-
-o con nodemon
-
-```
-npm run dev
-```
+GET /api/asistencias
+GET /api/asistencias/:id
+POST /api/asistencias
+PUT /api/asistencias/:id
+DELETE /api/asistencias/:id
 
 ---
 
 # 🔐 Autenticación
 
-Todos los endpoints están protegidos. Se debe enviar el siguiente header en cada petición:
+Todos los endpoints requieren enviar el siguiente header:
 
-```
 password: MiPasswordSegura2024
-```
+
+Middleware implementado para proteger todas las rutas excepto la raíz.
+
+---
+
+# ⚙️ Instalación del proyecto
+
+1. Clonar repositorio
+
+git clone https://github.com/Diego-Rojas19/colegioplayon.git
+
+2. Instalar dependencias
+
+npm install
+
+3. Configurar archivo .env
+
+PORT=3000
+API_PASSWORD=MiPasswordSegura2024
+NODE_ENV=production
+
+4. Ejecutar proyecto
+
+node index.js
+
+modo desarrollo:
+
+npm run dev
 
 ---
 
 # 🧪 Pruebas de la API
 
-Las pruebas se realizaron utilizando **Postman**, verificando:
+Las pruebas fueron realizadas con Postman verificando:
 
-* Casos correctos
-* Validaciones de campos obligatorios
-* Manejo de errores (400, 404, 401)
+* endpoints CRUD
+* validaciones de datos
+* autenticación
+* manejo de errores
+* filtros dinámicos
 
 ---
 
-# ❗ Manejo de errores
+# ❗ Validaciones implementadas
 
-La API incluye validaciones para:
+* email único en estudiantes y profesores
+* nota entre 0 y 5
+* edad entre 5 y 25
+* presente solo 0 o 1
+* existencia de llaves foráneas
+* campos obligatorios
+* filtros dinámicos en GET
+* autenticación por middleware
 
-* Autenticación por header
-* Campos obligatorios
-* Formato de email
-* Notas entre 0.0 y 5.0
-* Relaciones entre entidades (FK)
-* Recursos no encontrados
+---
+
+# ☁️ Despliegue en Render
+
+Configuración:
+
+Build Command:
+npm install
+
+Start Command:
+node seed.js && node index.js
+
+Variables de entorno:
+
+API_PASSWORD=MiPasswordSegura2024
+NODE_ENV=production
 
 ---
 
 # 👨‍💻 Autor
 
-**Diego Rojas**
+Diego Andres Rojas Quintero
 
-Proyecto académico – SENA  
+Proyecto Final – SENA
 Tecnología en Análisis y Desarrollo de Software
